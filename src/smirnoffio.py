@@ -61,6 +61,9 @@ try:
     # QYD: name of class are modified to avoid colliding with ForceBalance Molecule
     from openff.toolkit.topology import Molecule as OffMolecule
     from openff.toolkit.topology import Topology as OffTopology
+    from openff.toolkit import ToolkitRegistry, RDKitToolkitWrapper
+    from openff.toolkit.utils import toolkit_registry_manager
+    from openff.toolkit.utils.nagl_wrapper import NAGLToolkitWrapper
     from openff.units import unit
     from openff.units.openmm import ensure_quantity
     toolkit_import_success = True
@@ -415,7 +418,8 @@ class SMIRNOFF(OpenMM):
 
         # Apply the FF parameters to the system. Currently this is the only way to
         # determine if the FF will apply virtual sites to the system.
-        interchange = self.forcefield.create_interchange(self.off_topology)
+        with toolkit_registry_manager(ToolkitRegistry([RDKitToolkitWrapper, NAGLToolkitWrapper])):
+            interchange = self.forcefield.create_interchange(self.off_topology)
 
         n_virtual_sites = 0
         self._has_virtual_sites = False
