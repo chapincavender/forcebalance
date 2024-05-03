@@ -488,7 +488,8 @@ class SMIRNOFF(OpenMM):
         # Because self.forcefield is being updated in forcebalance.forcefield.FF.make()
         # there is no longer a need to create a new force field object here.
         try:
-            interchange = self.forcefield.create_interchange(self.off_topology)
+            with toolkit_registry_manager(ToolkitRegistry([RDKitToolkitWrapper, NAGLToolkitWrapper])):
+                interchange = self.forcefield.create_interchange(self.off_topology)
             self.system = interchange.to_openmm()
             self.off_topology = interchange.topology
         except Exception as error:
